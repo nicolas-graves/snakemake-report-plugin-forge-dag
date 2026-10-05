@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snakemake-report-plugin-forge-dag"
+version = "0.1.0"
+description = "Snakemake report plugin drawing the job DAG with each node linked to its rule's source on a git forge."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.10"
+dependencies = [
+    "snakemake-interface-common>=1.17",
+    "snakemake-interface-report-plugins>=2,<3",
+]
+
+[tool.setuptools]
+packages = ["snakemake_report_plugin_forge_dag"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
