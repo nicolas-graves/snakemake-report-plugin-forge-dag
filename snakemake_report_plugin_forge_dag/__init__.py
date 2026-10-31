@@ -49,6 +49,16 @@ class ReportSettings(ReportSettingsBase):
             "required": False,
         },
     )
+    unlink_own_repo: bool = field(
+        default=False,
+        metadata={
+            "help": "Draw the rules of the workflow's own repository without "
+            "links, e.g. when that repository is private. Submodule rules keep "
+            "their links.",
+            "env_var": False,
+            "required": False,
+        },
+    )
     commit: Optional[str] = field(
         default=None,
         metadata={
@@ -74,6 +84,8 @@ class Reporter(ReporterBase):
         unresolved = set()
 
         def link(rule):
+            if settings.unlink_own_repo and resolver.in_own_repo(Path(rule.snakefile)):
+                return None
             line = rule_source_line(rule)
             found = resolver.link(Path(rule.snakefile), line)
             if found is None:

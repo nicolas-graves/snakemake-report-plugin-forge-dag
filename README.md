@@ -38,6 +38,7 @@ link and listed in a warning.
 | `--report-forge-dag-path` | required | Output file. `.dot`/`.gv` writes DOT; any other suffix is rendered with graphviz (`dot -T<suffix>`), which must be on `PATH`. |
 | `--report-forge-dag-base-url` | from `origin` | Forge web URL of the workflow's own repository, e.g. `https://gitlab.com/group/project`. |
 | `--report-forge-dag-commit` | `HEAD` | Commit (or tag) to pin the workflow's own links to. |
+| `--report-forge-dag-unlink-own-repo` | off | Draw the rules of the workflow's own repository without links, e.g. when it is private. Submodule rules keep theirs. |
 
 ## Notes
 

@@ -118,6 +118,10 @@ class ForgeLinkResolver:
         sha = git(superproject_path, "rev-parse", f"HEAD:{rel}")
         return base, sha
 
+    def in_own_repo(self, file: Path) -> bool:
+        """Whether ``file`` belongs to the workflow's own repository (not a submodule)."""
+        return self._toplevel(Path(file).resolve().parent) == self.root
+
     def link(self, file: Path, line: int) -> Optional[Link]:
         """Permalink to ``file`` at ``line``, or None if it cannot be resolved
         (file outside any git repository, repository without ``origin``,

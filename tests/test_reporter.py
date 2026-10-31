@@ -242,6 +242,18 @@ def test_settings_override_root_forge(workflow, tmp_path):
     assert "https://github.com/o/m/blob/" in nodes["m_r"]
 
 
+def test_unlink_own_repo_keeps_submodule_links(workflow, tmp_path):
+    root, recorded = workflow
+    out = tmp_path / "dag.dot"
+    result = run_report(root, out, "--report-forge-dag-unlink-own-repo")
+    nodes = node_attrs(out.read_text())
+    for rule in ("top", "mid", "deep"):
+        assert "URL=" not in nodes[rule], rule
+    assert f'URL="https://github.com/o/m/blob/{recorded}/Snakefile#L1"' in nodes["m_r"]
+    # Unlinked on request, not unresolved: no warning.
+    assert "left unlinked" not in result.stderr
+
+
 def test_submodule_without_origin_stays_unlinked(workflow, tmp_path):
     root, _ = workflow
     git(root / "modules" / "m", "remote", "remove", "origin")
