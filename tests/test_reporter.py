@@ -242,6 +242,25 @@ def test_settings_override_root_forge(workflow, tmp_path):
     assert "https://github.com/o/m/blob/" in nodes["m_r"]
 
 
+def test_use_rule_with_links_to_its_use_statement(workflow, tmp_path):
+    """A rule derived with `use rule ... with:` links to that statement."""
+    root, _ = workflow
+    text = ROOT_SNAKEFILE.replace('"mid/a.txt",', '"mid/a.txt",\n        "mid2/a.txt",') + """
+
+use rule mid as mid2 with:
+    output:
+        "mid2/{sample}.txt",
+"""
+    write(root / "Snakefile", text)
+    git(root, "commit", "-qam", "use rule")
+    out = tmp_path / "dag.dot"
+    run_report(root, out)
+    nodes = node_attrs(out.read_text())
+    head = git(root, "rev-parse", "HEAD")
+    line = line_of(root / "Snakefile", "use rule mid as mid2")
+    assert f'URL="https://gitlab.com/g/p/-/blob/{head}/Snakefile#L{line}"' in nodes["mid2"]
+
+
 def test_unlink_own_repo_keeps_submodule_links(workflow, tmp_path):
     root, recorded = workflow
     out = tmp_path / "dag.dot"

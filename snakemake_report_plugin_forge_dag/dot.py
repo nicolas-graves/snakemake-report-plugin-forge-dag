@@ -21,11 +21,22 @@ from snakemake_interface_common.exceptions import WorkflowError
 from snakemake_report_plugin_forge_dag.forge import Link
 
 
+def rule_snakefile(rule) -> str:
+    """Path of the file defining ``rule``.
+
+    A rule derived with ``use rule ... with:`` carries a Snakemake source-file
+    object instead of the path string other rules carry.
+    """
+    snakefile = rule.snakefile
+    get_path = getattr(snakefile, "get_path_or_uri", None)
+    return str(get_path(secret_free=True) if get_path else snakefile)
+
+
 def rule_source_line(rule) -> int:
     """1-based line of the ``rule``/``checkpoint`` statement in rule.snakefile."""
     linemaps = getattr(getattr(rule, "workflow", None), "linemaps", None)
     try:
-        return linemaps[rule.snakefile][rule.lineno]
+        return linemaps[rule_snakefile(rule)][rule.lineno]
     except (TypeError, KeyError) as e:
         raise WorkflowError(
             f"forge-dag: no source line map for rule {rule.name} "

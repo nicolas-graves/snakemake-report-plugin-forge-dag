@@ -19,7 +19,7 @@ from snakemake_interface_common.logging import get_logger
 from snakemake_interface_report_plugins.reporter import ReporterBase
 from snakemake_interface_report_plugins.settings import ReportSettingsBase
 
-from snakemake_report_plugin_forge_dag.dot import render_dot, rule_source_line
+from snakemake_report_plugin_forge_dag.dot import render_dot, rule_snakefile, rule_source_line
 from snakemake_report_plugin_forge_dag.forge import ForgeLinkResolver
 
 __all__ = ["ReportSettings", "Reporter"]
@@ -84,10 +84,11 @@ class Reporter(ReporterBase):
         unresolved = set()
 
         def link(rule):
-            if settings.unlink_own_repo and resolver.in_own_repo(Path(rule.snakefile)):
+            snakefile = Path(rule_snakefile(rule))
+            if settings.unlink_own_repo and resolver.in_own_repo(snakefile):
                 return None
             line = rule_source_line(rule)
-            found = resolver.link(Path(rule.snakefile), line)
+            found = resolver.link(snakefile, line)
             if found is None:
                 unresolved.add(rule.name)
             return found
